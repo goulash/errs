@@ -91,12 +91,9 @@ type List []error
 
 // Bundle bundles all received errors into an ErrorList, which you
 // have to supply (as el).
-func Bundle(el *ErrorList) Handler {
+func Bundle(el *List) Handler {
 	return func(err error) error {
 		if err != nil {
-			if *el == nil {
-				*el = make(ErrorList, 0, 1)
-			}
 			*el = append(*el, err)
 		}
 		return nil
