@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// Collector collects multiple errors and returns a MultipleError
+// if any of the errors are non-nil.
 type Collector struct {
 	Message string
 	Errors  []error
@@ -21,25 +23,34 @@ func NewCollector(msg string) *Collector {
 	}
 }
 
+// Add adds err to the list of errors, without checking
+// whether it is nil or not.
 func (c *Collector) Add(err error) {
+	c.Errors = append(c.Errors, err)
+}
+
+// Collect adds err if it is non-nil.
+func (c *Collector) Collect(err error) {
 	if err != nil {
-		c.Errors = append(c.Errors, err)
+		c.Add(err)
 	}
 }
 
-func (c *Collector) Error() *Multiple {
+// Error returns a MultipleError if it contains any errors,
+// otherwise it returns nil.
+func (c *Collector) Error() *MultipleError {
 	if len(c.Errors) > 0 {
-		return &Multiple{c.Message, c.Errors}
+		return &MultipleError{c.Message, c.Errors}
 	}
 	return nil
 }
 
-type Multiple struct {
+type MultipleError struct {
 	Message string
 	Errors  []error
 }
 
-func (e *Multiple) Error() string {
+func (e *MultipleError) Error() string {
 	xs := make([]string, len(e.Errors))
 	for i, e := range e.Errors {
 		xs[i] = e.Error()
