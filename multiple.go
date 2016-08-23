@@ -38,7 +38,7 @@ func (c *Collector) Collect(err error) {
 
 // Error returns a MultipleError if it contains any errors,
 // otherwise it returns nil.
-func (c *Collector) Error() *MultipleError {
+func (c *Collector) Error() error {
 	if len(c.Errors) > 0 {
 		return &MultipleError{c.Message, c.Errors}
 	}
